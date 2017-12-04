@@ -1014,8 +1014,7 @@ func (a *APISpec) RequestValid(r *http.Request) (bool, RequestStatus, interface{
 	}
 }
 
-// Version attempts to extract the version data from a request, depending on where it is stored in the
-// request (currently only "header" is supported)
+// Version attempts to extract the version data from a request, depending on where it is stored in the version
 func (a *APISpec) Version(r *http.Request) (*apidef.VersionInfo, []URLSpec, bool, RequestStatus) {
 	var version apidef.VersionInfo
 
@@ -1037,12 +1036,14 @@ func (a *APISpec) Version(r *http.Request) (*apidef.VersionInfo, []URLSpec, bool
 			if vname == "" && a.VersionData.DefaultVersion != "" {
 				vname = a.VersionData.DefaultVersion
 				ctxSetDefaultVersion(r)
+				ctxSetDefaultVersionLocation(r, a.VersionData.DefaultLocation)
 			}
 			if vname == "" && a.VersionData.DefaultVersion == "" {
 				return &version, nil, false, VersionNotFound
 			}
 			// Load Version Data - General
 			var ok bool
+
 			if version, ok = a.VersionData.Versions[vname]; !ok {
 				return &version, nil, false, VersionDoesNotExist
 			}
